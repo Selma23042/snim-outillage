@@ -1,0 +1,24 @@
+replicaCount: 1
+
+image:
+  repository: nexus:8082/odoo-custom
+  pullPolicy: IfNotPresent
+  tag: "19.0"
+
+imagePullSecrets:
+  - name: nexus-credentials
+
+service:
+  type: NodePort
+  port: 8069
+  nodePort: 30069
+
+ingress:
+  enabled: false
+
+resources: {}
+autoscaling:
+  enabled: false
+nodeSelector: {}
+tolerations: []
+affinity: {}

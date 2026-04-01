@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_fiche_vie_search" model="ir.ui.view">
+    <field name="name">snim.fiche.vie.materiel.search</field>
+    <field name="model">snim.fiche.vie.materiel</field>
+    <field name="arch" type="xml">
+      <search string="Rechercher une fiche">
+        <field name="instrument_id" string="Instrument"/>
+        <field name="num_procedure" string="N Procedure"/>
+        <field name="entite" string="Entite"/>
+        <separator/>
+        <filter string="Conforme"
+                name="conforme"
+                domain="[('decision','=','conforme')]"/>
+        <filter string="Non conforme"
+                name="non_conforme"
+                domain="[('decision','=','non_conforme')]"/>
+        <filter string="Ajourne"
+                name="ajourne"
+                domain="[('decision','=','ajourne')]"/>
+        <separator/>
+        <group expand="0" string="Grouper par">
+          <filter string="Instrument"
+                  name="group_instrument"
+                  context="{'group_by':'instrument_id'}"/>
+          <filter string="Decision"
+                  name="group_decision"
+                  context="{'group_by':'decision'}"/>
+          <filter string="Nature"
+                  name="group_nature"
+                  context="{'group_by':'nature'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <record id="view_fiche_vie_list" model="ir.ui.view">
+    <field name="name">snim.fiche.vie.materiel.list</field>
+    <field name="model">snim.fiche.vie.materiel</field>
+    <field name="arch" type="xml">
+      <list string="Fiches de vie"
+            decoration-success="decision == 'conforme'"
+            decoration-danger="decision == 'non_conforme'"
+            decoration-warning="decision == 'ajourne'">
+        <field name="name"/>
+        <field name="instrument_id"/>
+        <field name="date_etalonnage"/>
+        <field name="date_proch_etalonnage"/>
+        <field name="nature"/>
+        <field name="entite"/>
+        <field name="visa_resp"/>
+        <field name="decision" widget="badge"
+               decoration-success="decision == 'conforme'"
+               decoration-danger="decision == 'non_conforme'"
+               decoration-warning="decision == 'ajourne'"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_fiche_vie_form" model="ir.ui.view">
+    <field name="name">snim.fiche.vie.materiel.form</field>
+    <field name="model">snim.fiche.vie.materiel</field>
+    <field name="arch" type="xml">
+      <form duplicate="false">
+        <header>
+          <field name="decision" widget="statusbar"
+                 statusbar_visible="conforme,non_conforme,ajourne"/>
+          <button string="Imprimer Fiche"
+                  icon="fa-print"
+                  name="%(snim_maintenance.action_report_fiche_vie)d"
+                  type="action"
+                  class="btn-primary"
+                  title="Imprimer la fiche de vie"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1>
+              <field name="name" readonly="1"/>
+            </h1>
+          </div>
+          <group>
+            <group string="Identification">
+              <field name="instrument_id"
+                     options="{'no_create': True}"
+                     placeholder="Selectionner un instrument"/>
+              <field name="num_procedure"
+                     placeholder="Ex: PROC-2025-001"/>
+              <field name="lieu_affectation"
+                     placeholder="Zone ou atelier"/>
+              <field name="entite"
+                     placeholder="Service responsable"/>
+              <field name="visa_resp"
+                     placeholder="Nom du responsable"/>
+            </group>
+            <group string="Etalonnage">
+              <field name="date_etalonnage"/>
+              <field name="date_proch_etalonnage"/>
+              <field name="nature"/>
+              <field name="decision" widget="badge"
+                     decoration-success="decision == 'conforme'"
+                     decoration-danger="decision == 'non_conforme'"
+                     decoration-warning="decision == 'ajourne'"/>
+            </group>
+          </group>
+          <group string="Resultats obtenus">
+            <field name="resultats"
+                   nolabel="1"
+                   colspan="2"
+                   placeholder="Decrire les resultats de l etalonnage..."/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_fiche_vie" model="ir.actions.act_window">
+    <field name="name">Fiches de vie</field>
+    <field name="res_model">snim.fiche.vie.materiel</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        Aucune fiche de vie enregistree
+      </p>
+      <p>
+        Cliquez sur Nouveau pour creer
+        une fiche de vie.
+      </p>
+    </field>
+  </record>
+
+</odoo>

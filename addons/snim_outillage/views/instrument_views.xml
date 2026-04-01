@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_instrument_search" model="ir.ui.view">
+    <field name="name">snim.instrument.search</field>
+    <field name="model">snim.instrument</field>
+    <field name="arch" type="xml">
+      <search string="Rechercher un instrument">
+        <field name="code" string="Code"/>
+        <field name="designation" string="Designation"/>
+        <field name="detenu_par" string="Detenu par"/>
+        <field name="affectation" string="Affectation"/>
+        <separator/>
+        <filter string="Conforme"
+                name="conforme"
+                domain="[('statut','=','conforme')]"/>
+        <filter string="Non conforme"
+                name="non_conforme"
+                domain="[('statut','=','non_conforme')]"/>
+        <filter string="En attente"
+                name="en_attente"
+                domain="[('statut','=','en_attente')]"/>
+        <filter string="Reforme"
+                name="reforme"
+                domain="[('statut','=','reforme')]"/>
+        <separator/>
+        <group expand="0" string="Grouper par">
+          <filter string="Statut"
+                  name="group_statut"
+                  context="{'group_by':'statut'}"/>
+          <filter string="Affectation"
+                  name="group_affectation"
+                  context="{'group_by':'affectation'}"/>
+          <filter string="Detenu par"
+                  name="group_detenu"
+                  context="{'group_by':'detenu_par'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <record id="view_instrument_list" model="ir.ui.view">
+    <field name="name">snim.instrument.list</field>
+    <field name="model">snim.instrument</field>
+    <field name="arch" type="xml">
+      <list string="Instruments"
+            decoration-success="statut == 'conforme'"
+            decoration-danger="statut == 'non_conforme'"
+            decoration-warning="statut == 'en_attente'"
+            decoration-muted="statut == 'reforme'">
+        <field name="code"/>
+        <field name="designation"/>
+        <field name="marque"/>
+        <field name="detenu_par"/>
+        <field name="affectation"/>
+        <field name="periodicite" string="Periodicite (mois)"/>
+        <field name="date_der_etalonnage"/>
+        <field name="date_pro_etalonnage" optional="show"/>
+        <field name="statut" widget="badge"
+               decoration-success="statut == 'conforme'"
+               decoration-danger="statut == 'non_conforme'"
+               decoration-warning="statut == 'en_attente'"
+               decoration-muted="statut == 'reforme'"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_instrument_form" model="ir.ui.view">
+    <field name="name">snim.instrument.form</field>
+    <field name="model">snim.instrument</field>
+    <field name="arch" type="xml">
+      <form duplicate="false">
+        <header>
+          <field name="statut" widget="statusbar"
+                 statusbar_visible="en_attente,conforme,non_conforme,reforme"/>
+          <button string="Modifier"
+                  icon="fa-pencil"
+                  type="object"
+                  name="action_edit"
+                  class="btn-primary"
+                  title="Modifier"/>
+          <button string="Fiche PDF"
+                  icon="fa-download"
+                  name="%(snim_maintenance.action_report_fiche_vie)d"
+                  type="action"
+                  class="btn-secondary"
+                  title="Telecharger fiche de vie"/>
+          <button string="Supprimer"
+                  icon="fa-trash"
+                  type="object"
+                  name="action_delete"
+                  class="btn-danger"
+                  title="Supprimer"
+                  confirm="Voulez-vous vraiment supprimer cet instrument ?"/>
+        </header>
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button name="action_voir_fiches"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-list-alt">
+              <field name="fiche_vie_count"
+                     string="Fiches de vie"
+                     widget="statinfo"/>
+            </button>
+          </div>
+          <div class="oe_title">
+            <h1>
+              <field name="code"
+                     placeholder="Code (ex: INST-001)"/>
+            </h1>
+            <h2>
+              <field name="designation"
+                     placeholder="Designation de l instrument"/>
+            </h2>
+          </div>
+          <group>
+            <group string="Identification">
+              <field name="marque"
+                     placeholder="Ex: Mitutoyo"/>
+              <field name="capacite"
+                     placeholder="Ex: 0-150 mm"/>
+              <field name="detenu_par"
+                     placeholder="Service ou personne"/>
+              <field name="affectation"
+                     placeholder="Zone ou atelier"/>
+              <field name="date_mise_en_service"/>
+            </group>
+            <group string="Etalonnage">
+              <field name="periodicite"/>
+              <field name="date_der_etalonnage"/>
+              <field name="date_pro_etalonnage" readonly="1"/>
+              <field name="statut" widget="badge"
+                     decoration-success="statut == 'conforme'"
+                     decoration-danger="statut == 'non_conforme'"
+                     decoration-warning="statut == 'en_attente'"
+                     decoration-muted="statut == 'reforme'"/>
+            </group>
+          </group>
+          <group string="Motif / Observations">
+            <field name="motif"
+                   nolabel="1"
+                   colspan="2"
+                   placeholder="Informations complementaires..."/>
+          </group>
+          <notebook>
+            <page string="Fiches de vie" name="fiches">
+              <field name="fiche_vie_ids">
+                <list>
+                  <field name="name"/>
+                  <field name="date_etalonnage"/>
+                  <field name="date_proch_etalonnage"/>
+                  <field name="nature"/>
+                  <field name="entite"/>
+                  <field name="decision" widget="badge"
+                         decoration-success="decision == 'conforme'"
+                         decoration-danger="decision == 'non_conforme'"
+                         decoration-warning="decision == 'ajourne'"/>
+                </list>
+              </field>
+            </page>
+            <page string="Reformes" name="reformes">
+              <field name="reforme_ids">
+                <list>
+                  <field name="name"/>
+                  <field name="date_reforme"/>
+                  <field name="motif"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_instrument" model="ir.actions.act_window">
+    <field name="name">Instruments</field>
+    <field name="res_model">snim.instrument</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        Aucun instrument enregistre
+      </p>
+      <p>
+        Cliquez sur Nouveau pour ajouter
+        votre premier instrument.
+      </p>
+    </field>
+  </record>
+
+</odoo>

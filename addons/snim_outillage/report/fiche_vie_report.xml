@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="action_report_fiche_vie"
+          model="ir.actions.report">
+    <field name="name">Fiche de vie complete</field>
+    <field name="model">snim.instrument</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">snim_maintenance.report_fiche_vie_template</field>
+    <field name="report_file">snim_maintenance.report_fiche_vie_template</field>
+    <field name="binding_model_id" ref="model_snim_instrument"/>
+    <field name="binding_type">report</field>
+  </record>
+
+  <template id="report_fiche_vie_template">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <t t-call="web.external_layout">
+          <div class="page">
+
+            <!-- En-tete instrument -->
+            <div class="row mb-4">
+              <div class="col-12 text-center">
+                <h2>SNIM -- Fiche de Vie Materiel</h2>
+                <h4>Instrument : <t t-esc="doc.code"/> -- <t t-esc="doc.designation"/></h4>
+              </div>
+            </div>
+
+            <!-- Informations instrument -->
+            <table class="table table-bordered table-sm mb-4">
+              <thead class="table-dark">
+                <tr><th colspan="4">Informations instrument</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Code</strong></td>
+                  <td><t t-esc="doc.code"/></td>
+                  <td><strong>Designation</strong></td>
+                  <td><t t-esc="doc.designation"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Marque</strong></td>
+                  <td><t t-esc="doc.marque"/></td>
+                  <td><strong>Capacite</strong></td>
+                  <td><t t-esc="doc.capacite"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Detenu par</strong></td>
+                  <td><t t-esc="doc.detenu_par"/></td>
+                  <td><strong>Affectation</strong></td>
+                  <td><t t-esc="doc.affectation"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Date mise en service</strong></td>
+                  <td><t t-esc="doc.date_mise_en_service"/></td>
+                  <td><strong>Periodicite</strong></td>
+                  <td><t t-esc="doc.periodicite"/> mois</td>
+                </tr>
+                <tr>
+                  <td><strong>Derniere etalonnage</strong></td>
+                  <td><t t-esc="doc.date_der_etalonnage"/></td>
+                  <td><strong>Prochaine etalonnage</strong></td>
+                  <td><t t-esc="doc.date_pro_etalonnage"/></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Historique des etalonnages -->
+            <h4 class="mt-4">Historique des etalonnages</h4>
+            <table class="table table-bordered table-sm">
+              <thead class="table-dark">
+                <tr>
+                  <th>Reference</th>
+                  <th>N° Procedure</th>
+                  <th>Date etalonnage</th>
+                  <th>Date prochaine</th>
+                  <th>Nature</th>
+                  <th>Decision</th>
+                  <th>Entite</th>
+                  <th>Visa resp.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <t t-foreach="doc.fiche_vie_ids" t-as="fiche">
+                  <tr>
+                    <td><t t-esc="fiche.name"/></td>
+                    <td><t t-esc="fiche.num_procedure"/></td>
+                    <td><t t-esc="fiche.date_etalonnage"/></td>
+                    <td><t t-esc="fiche.date_proch_etalonnage"/></td>
+                    <td><t t-esc="fiche.nature"/></td>
+                    <td><t t-esc="fiche.decision"/></td>
+                    <td><t t-esc="fiche.entite"/></td>
+                    <td><t t-esc="fiche.visa_resp"/></td>
+                  </tr>
+                  <tr>
+                    <td colspan="8">
+                      <strong>Resultats :</strong>
+                      <t t-esc="fiche.resultats"/>
+                    </td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+
+          </div>
+        </t>
+      </t>
+    </t>
+  </template>
+
+</odoo>

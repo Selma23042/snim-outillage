@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_instrument_user,instrument.user,snim_maintenance.model_snim_instrument,base.group_user,1,1,1,0
+access_instrument_manager,instrument.manager,snim_maintenance.model_snim_instrument,base.group_system,1,1,1,1
+access_fiche_vie_user,fiche.vie.user,snim_maintenance.model_snim_fiche_vie_materiel,base.group_user,1,1,1,0
+access_fiche_vie_manager,fiche.vie.manager,snim_maintenance.model_snim_fiche_vie_materiel,base.group_system,1,1,1,1
+access_reforme_user,reforme.user,snim_maintenance.model_snim_reforme,base.group_user,1,1,1,0
+access_reforme_manager,reforme.manager,snim_maintenance.model_snim_reforme,base.group_system,1,1,1,1

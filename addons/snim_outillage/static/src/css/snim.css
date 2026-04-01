@@ -1,0 +1,42 @@
+.o_list_view .o_cp_action_menus,
+.o_form_view .o_cp_action_menus {
+    display: none !important;
+}
+.o_list_view .o_cp_action_menus,
+.o_form_view .o_cp_action_menus {
+    display: none !important;
+}
+
+.o_statusbar_status button[data-value="conforme"] {
+    background-color: #EAF3DE !important;
+    color: #27500A !important;
+    border-color: #97C459 !important;
+}
+
+.o_statusbar_status button[data-value="non_conforme"] {
+    background-color: #FCEBEB !important;
+    color: #791F1F !important;
+    border-color: #F09595 !important;
+}
+
+.o_statusbar_status button[data-value="ajourne"] {
+    background-color: #FAEEDA !important;
+    color: #633806 !important;
+    border-color: #EF9F27 !important;
+}
+
+.o_statusbar_status button[data-value="en_attente"] {
+    background-color: #FAEEDA !important;
+    color: #633806 !important;
+    border-color: #EF9F27 !important;
+}
+
+.o_statusbar_status button.o_arrow_button_current[data-value="conforme"] {
+    background-color: #3B6D11 !important;
+    color: #ffffff !important;
+}
+
+.o_statusbar_status button.o_arrow_button_current[data-value="non_conforme"] {
+    background-color: #A32D2D !important;
+    color: #ffffff !important;
+}
