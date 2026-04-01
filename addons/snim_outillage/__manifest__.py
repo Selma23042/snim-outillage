@@ -1,10 +1,10 @@
 {
-    'name': 'Module Test DevOps',
+    'name': 'SNIM Outillage',
     'version': '19.0.1.0.0',
     'license': 'LGPL-3',
     'category': 'Maintenance',
-    'summary': 'Module de test pour pipeline DevOps',
-    'description': 'Module créé pour valider le pipeline CI/CD Jenkins',
+    'summary': 'Gestion des instruments et outillage SNIM',
+    'description': 'Module de gestion des instruments de mesure SNIM',
     'author': 'Salma',
     'depends': ['base', 'mail'],
     'data': [
@@ -17,7 +17,7 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'module_test_devops/static/src/css/snim.css',
+            'snim_maintenance/static/src/css/snim.css',
         ],
     },
     'installable': True,

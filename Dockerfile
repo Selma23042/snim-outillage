@@ -2,7 +2,7 @@ FROM odoo:19.0
 
 USER root
 
-COPY ./snim_outillage /mnt/extra-addons/snim_outillage
+COPY ./snim_maintenance /mnt/extra-addons/snim_maintenance
 
 COPY ./config/odoo.conf /etc/odoo/odoo.conf
 

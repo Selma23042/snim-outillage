@@ -24,7 +24,7 @@
                 name="reforme"
                 domain="[('statut','=','reforme')]"/>
         <separator/>
-        <group expand="0" string="Grouper par">
+        <group  string="Grouper par">
           <filter string="Statut"
                   name="group_statut"
                   context="{'group_by':'statut'}"/>

@@ -38,8 +38,7 @@ pipeline {
        sh '''
             python3 -m venv .venv
             .venv/bin/pip install pytest --quiet
-            .venv/bin/pytest addons/snim_outillage/tests/ -v
-        '''
+            .venv/bin/pytest snim_maintenance/tests/ -v        '''
     }
         }
 

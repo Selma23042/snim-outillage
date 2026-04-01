@@ -20,7 +20,7 @@
                 name="ajourne"
                 domain="[('decision','=','ajourne')]"/>
         <separator/>
-        <group expand="0" string="Grouper par">
+        <group  string="Grouper par">
           <filter string="Instrument"
                   name="group_instrument"
                   context="{'group_by':'instrument_id'}"/>
