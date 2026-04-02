@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Vue formulaire du wizard d import -->
+  <record id="view_instrument_import_wizard_form" model="ir.ui.view">
+    <field name="name">snim.instrument.import.wizard.form</field>
+    <field name="model">snim.instrument.import.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Importer des instruments">
+        <group>
+          <div class="alert alert-info" role="alert" colspan="2">
+            <div class="d-flex align-items-center">
+              <i class="fa fa-info-circle fa-2x me-3"/>
+              <div>
+                <strong>Import depuis un fichier Excel (.xlsx)</strong>
+                <br/>
+                Telechargez d'abord le template, remplissez-le,
+                puis importez-le ici.
+              </div>
+            </div>
+          </div>
+        </group>
+        <group>
+          <group>
+            <field name="file_data" filename="file_name"
+                   widget="binary"/>
+            <field name="file_name" invisible="1"/>
+            <field name="import_mode"
+                   widget="radio"/>
+          </group>
+        </group>
+        <footer>
+          <button string=" Importer"
+                  icon="fa-upload"
+                  name="action_import"
+                  type="object"
+                  class="btn-primary"/>
+          <button string=" Telecharger le template"
+                  icon="fa-download"
+                  name="action_download_template"
+                  type="object"
+                  class="btn-secondary"/>
+          <button string="Annuler"
+                  class="btn-secondary"
+                  special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- Action pour ouvrir le wizard -->
+  <record id="action_instrument_import_wizard" model="ir.actions.act_window">
+    <field name="name">Importer instruments (Excel)</field>
+    <field name="res_model">snim.instrument.import.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+</odoo>

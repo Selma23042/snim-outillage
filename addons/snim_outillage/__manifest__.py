@@ -12,14 +12,11 @@
         'views/instrument_views.xml',
         'views/fiche_vie_views.xml',
         'views/reforme_views.xml',
+        'wizard/import_instrument_wizard_views.xml',
         'views/menu_views.xml',
         'report/fiche_vie_report.xml',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'snim_maintenance/static/src/css/snim.css',
-        ],
-    },
+    'assets': {},
     'installable': True,
     'application': True,
     'auto_install': False,

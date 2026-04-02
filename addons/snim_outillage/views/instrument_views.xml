@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--   VUE RECHERCHE                                    -->
+  <!-- ══════════════════════════════════════════════════ -->
   <record id="view_instrument_search" model="ir.ui.view">
     <field name="name">snim.instrument.search</field>
     <field name="model">snim.instrument</field>
     <field name="arch" type="xml">
       <search string="Rechercher un instrument">
         <field name="code" string="Code"/>
-        <field name="designation" string="Designation"/>
-        <field name="detenu_par" string="Detenu par"/>
+        <field name="designation" string="Désignation"/>
+        <field name="detenu_par" string="Détenu par"/>
         <field name="affectation" string="Affectation"/>
+        <field name="marque" string="Marque"/>
+        <filter string="Étalonnage dépassé"
+                name="etalonnage_depasse"
+                domain="[('etalonnage_status','=','depasse')]"/>
+        <filter string="Étalonnage bientôt"
+                name="etalonnage_bientot"
+                domain="[('etalonnage_status','=','bientot')]"/>
+        <filter string="Étalonnage à jour"
+                name="etalonnage_ok"
+                domain="[('etalonnage_status','=','ok')]"/>
         <separator/>
         <filter string="Conforme"
                 name="conforme"
@@ -20,43 +33,73 @@
         <filter string="En attente"
                 name="en_attente"
                 domain="[('statut','=','en_attente')]"/>
-        <filter string="Reforme"
+        <filter string="Réformé"
                 name="reforme"
                 domain="[('statut','=','reforme')]"/>
         <separator/>
-        <group  string="Grouper par">
+        <group string="Grouper par">
           <filter string="Statut"
                   name="group_statut"
                   context="{'group_by':'statut'}"/>
+          <filter string="État étalonnage"
+                  name="group_etal_status"
+                  context="{'group_by':'etalonnage_status'}"/>
           <filter string="Affectation"
                   name="group_affectation"
                   context="{'group_by':'affectation'}"/>
-          <filter string="Detenu par"
+          <filter string="Détenu par"
                   name="group_detenu"
                   context="{'group_by':'detenu_par'}"/>
+          <filter string="Marque"
+                  name="group_marque"
+                  context="{'group_by':'marque'}"/>
         </group>
       </search>
     </field>
   </record>
 
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--   VUE LISTE (Tree)                                 -->
+  <!-- ══════════════════════════════════════════════════ -->
   <record id="view_instrument_list" model="ir.ui.view">
     <field name="name">snim.instrument.list</field>
     <field name="model">snim.instrument</field>
     <field name="arch" type="xml">
       <list string="Instruments"
             decoration-success="statut == 'conforme'"
-            decoration-danger="statut == 'non_conforme'"
-            decoration-warning="statut == 'en_attente'"
-            decoration-muted="statut == 'reforme'">
-        <field name="code"/>
-        <field name="designation"/>
-        <field name="marque"/>
-        <field name="detenu_par"/>
-        <field name="affectation"/>
-        <field name="periodicite" string="Periodicite (mois)"/>
-        <field name="date_der_etalonnage"/>
-        <field name="date_pro_etalonnage" optional="show"/>
-        <field name="statut" widget="badge"
+            decoration-danger="statut == 'non_conforme' or etalonnage_status == 'depasse'"
+            decoration-warning="statut == 'en_attente' or etalonnage_status == 'bientot'"
+            decoration-muted="statut == 'reforme'"
+            multi_edit="1"
+            sample="1">
+        <header>
+          <button string="Exporter étalonnages (Excel)"
+                  type="object"
+                  name="action_export_etalonnage_excel"
+                  class="btn-primary"
+                  icon="fa-download"/>
+        </header>
+        <field name="code" string="Code"/>
+        <field name="designation" string="Désignation"/>
+        <field name="marque" string="Marque" optional="show"/>
+        <field name="capacite" string="Capacité" optional="hide"/>
+        <field name="detenu_par" string="Détenu par"/>
+        <field name="affectation" string="Affectation"/>
+        <field name="periodicite" string="Périod. (mois)" optional="show"/>
+        <field name="date_der_etalonnage" string="Dern. étal."/>
+        <field name="date_pro_etalonnage" string="Proch. étal."
+               decoration-danger="etalonnage_status == 'depasse'"
+               decoration-warning="etalonnage_status == 'bientot'"/>
+        <field name="jours_restants" string="Jours"
+               decoration-danger="jours_restants &lt; 0"
+               decoration-warning="jours_restants &gt;= 0 and jours_restants &lt;= 30"
+               optional="show"/>
+        <field name="etalonnage_status" string="Étal." widget="badge"
+               decoration-success="etalonnage_status == 'ok'"
+               decoration-danger="etalonnage_status == 'depasse'"
+               decoration-warning="etalonnage_status == 'bientot'"/>
+        <field name="statut" string="Statut" widget="badge"
                decoration-success="statut == 'conforme'"
                decoration-danger="statut == 'non_conforme'"
                decoration-warning="statut == 'en_attente'"
@@ -65,6 +108,61 @@
     </field>
   </record>
 
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--   VUE KANBAN                                       -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <record id="view_instrument_kanban" model="ir.ui.view">
+    <field name="name">snim.instrument.kanban</field>
+    <field name="model">snim.instrument</field>
+    <field name="arch" type="xml">
+      <kanban class="o_kanban_small_column"
+              default_group_by="statut"
+              sample="1"
+              quick_create="false">
+        <field name="code"/>
+        <field name="designation"/>
+        <field name="marque"/>
+        <field name="statut"/>
+        <field name="etalonnage_status"/>
+        <field name="date_pro_etalonnage"/>
+        <field name="jours_restants"/>
+        <field name="fiche_vie_count"/>
+        <field name="color"/>
+        <templates>
+          <t t-name="card" class="flex-row">
+            <aside>
+              <field name="color" widget="color_picker"/>
+            </aside>
+            <main>
+              <field name="code" class="fw-bolder fs-5"/>
+              <field name="designation" class="text-muted"/>
+              <div class="mt-2">
+                <field name="marque" class="fw-bold"/>
+              </div>
+              <hr class="my-1"/>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">Proch. étal. :</span>
+                <field name="date_pro_etalonnage"/>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-1">
+                <field name="etalonnage_status" widget="badge"
+                       decoration-success="etalonnage_status == 'ok'"
+                       decoration-danger="etalonnage_status == 'depasse'"
+                       decoration-warning="etalonnage_status == 'bientot'"/>
+                <span class="badge rounded-pill">
+                  <field name="fiche_vie_count"/> fiches
+                </span>
+              </div>
+            </main>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--   VUE FORMULAIRE                                   -->
+  <!-- ══════════════════════════════════════════════════ -->
   <record id="view_instrument_form" model="ir.ui.view">
     <field name="name">snim.instrument.form</field>
     <field name="model">snim.instrument</field>
@@ -72,27 +170,62 @@
       <form duplicate="false">
         <header>
           <field name="statut" widget="statusbar"
-                 statusbar_visible="en_attente,conforme,non_conforme,reforme"/>
+                 statusbar_visible="en_attente,conforme,non_conforme,reforme"
+                 clickable="0"/>
+
           <button string="Modifier"
                   icon="fa-pencil"
                   type="object"
                   name="action_edit"
                   class="btn-primary"
-                  title="Modifier"/>
+                  invisible="not id"/>
+
+          <button string="Conforme"
+                  icon="fa-check"
+                  type="object"
+                  name="action_set_conforme"
+                  class="btn-success"
+                  invisible="statut == 'conforme' or statut == 'reforme'"
+                  confirm="Confirmer le statut Conforme ?"/>
+
+          <button string="Non conforme"
+                  icon="fa-times"
+                  type="object"
+                  name="action_set_non_conforme"
+                  class="btn-warning"
+                  invisible="statut == 'non_conforme' or statut == 'reforme'"
+                  confirm="Confirmer le statut Non conforme ?"/>
+
+          <button string="Réformer"
+                  icon="fa-ban"
+                  type="object"
+                  name="action_set_reforme"
+                  class="btn-danger"
+                  invisible="statut == 'reforme'"
+                  confirm="Mettre cet instrument en réforme ? Cette action créera un enregistrement de réforme."/>
+
+          <button string="Exporter Excel"
+                  icon="fa-file-excel-o"
+                  type="object"
+                  name="action_export_etalonnage_excel"
+                  class="btn-secondary"/>
+
           <button string="Fiche PDF"
-                  icon="fa-download"
+                  icon="fa-file-pdf-o"
                   name="%(snim_maintenance.action_report_fiche_vie)d"
                   type="action"
                   class="btn-secondary"
-                  title="Telecharger fiche de vie"/>
+                  invisible="not id"/>
+
           <button string="Supprimer"
                   icon="fa-trash"
                   type="object"
                   name="action_delete"
                   class="btn-danger"
-                  title="Supprimer"
-                  confirm="Voulez-vous vraiment supprimer cet instrument ?"/>
+                  invisible="not id"
+                  confirm="Voulez-vous vraiment supprimer cet instrument ? Cette action est irréversible."/>
         </header>
+
         <sheet>
           <div class="oe_button_box" name="button_box">
             <button name="action_voir_fiches"
@@ -103,55 +236,101 @@
                      string="Fiches de vie"
                      widget="statinfo"/>
             </button>
+            <button name="action_voir_reformes"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-archive">
+              <field name="reforme_count"
+                     string="Réformés"
+                     widget="statinfo"/>
+            </button>
           </div>
+
+          <widget name="web_ribbon"
+                  text="ÉTALONNAGE DÉPASSÉ"
+                  bg_color="text-bg-danger"
+                  invisible="etalonnage_status != 'depasse'"/>
+
+          <widget name="web_ribbon"
+                  text="ÉTALONNAGE BIENTÔT"
+                  bg_color="text-bg-warning"
+                  invisible="etalonnage_status != 'bientot'"/>
+
           <div class="oe_title">
             <h1>
               <field name="code"
-                     placeholder="Code (ex: INST-001)"/>
+                     placeholder="Code (ex: INST-001)"
+                     readonly="id"/>
             </h1>
             <h2>
               <field name="designation"
-                     placeholder="Designation de l instrument"/>
+                     placeholder="Désignation de l'instrument"
+                     readonly="id"/>
             </h2>
           </div>
+
           <group>
             <group string="Identification">
               <field name="marque"
-                     placeholder="Ex: Mitutoyo"/>
+                     placeholder="Ex: Mitutoyo"
+                     readonly="id"/>
               <field name="capacite"
-                     placeholder="Ex: 0-150 mm"/>
+                     placeholder="Ex: 0-150 mm"
+                     readonly="id"/>
               <field name="detenu_par"
-                     placeholder="Service ou personne"/>
+                     placeholder="Service ou personne"
+                     readonly="id"/>
               <field name="affectation"
-                     placeholder="Zone ou atelier"/>
-              <field name="date_mise_en_service"/>
+                     placeholder="Zone ou atelier"
+                     readonly="id"/>
+              <field name="date_mise_en_service"
+                     readonly="id"/>
             </group>
-            <group string="Etalonnage">
-              <field name="periodicite"/>
-              <field name="date_der_etalonnage"/>
+
+            <group string="Étalonnage">
+              <field name="periodicite" readonly="id"/>
+              <field name="date_der_etalonnage" readonly="id"/>
               <field name="date_pro_etalonnage" readonly="1"/>
-              <field name="statut" widget="badge"
+              <field name="jours_restants" readonly="1"/>
+              <field name="etalonnage_status"
+                     widget="badge"
+                     readonly="1"
+                     decoration-success="etalonnage_status == 'ok'"
+                     decoration-danger="etalonnage_status == 'depasse'"
+                     decoration-warning="etalonnage_status == 'bientot'"/>
+              <field name="statut"
+                     widget="badge"
+                     readonly="id"
                      decoration-success="statut == 'conforme'"
                      decoration-danger="statut == 'non_conforme'"
                      decoration-warning="statut == 'en_attente'"
                      decoration-muted="statut == 'reforme'"/>
             </group>
           </group>
+
           <group string="Motif / Observations">
             <field name="motif"
                    nolabel="1"
                    colspan="2"
-                   placeholder="Informations complementaires..."/>
+                   readonly="id"
+                   placeholder="Informations complémentaires..."/>
           </group>
+
           <notebook>
-            <page string="Fiches de vie" name="fiches">
+            <page string="Fiches de vie" name="fiches" icon="fa-list-alt">
               <field name="fiche_vie_ids">
-                <list>
-                  <field name="name"/>
+                <list editable="bottom"
+                      decoration-success="decision == 'conforme'"
+                      decoration-danger="decision == 'non_conforme'"
+                      decoration-warning="decision == 'ajourne'">
+                  <field name="name" readonly="1"/>
+                  <field name="num_procedure"/>
                   <field name="date_etalonnage"/>
                   <field name="date_proch_etalonnage"/>
                   <field name="nature"/>
+                  <field name="lieu_affectation"/>
                   <field name="entite"/>
+                  <field name="visa_resp"/>
                   <field name="decision" widget="badge"
                          decoration-success="decision == 'conforme'"
                          decoration-danger="decision == 'non_conforme'"
@@ -159,7 +338,7 @@
                 </list>
               </field>
             </page>
-            <page string="Reformes" name="reformes">
+            <page string="Réformés" name="reformes" icon="fa-archive">
               <field name="reforme_ids">
                 <list>
                   <field name="name"/>
@@ -175,19 +354,35 @@
     </field>
   </record>
 
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--   ACTION PRINCIPALE                                -->
+  <!-- ══════════════════════════════════════════════════ -->
   <record id="action_instrument" model="ir.actions.act_window">
     <field name="name">Instruments</field>
     <field name="res_model">snim.instrument</field>
-    <field name="view_mode">list,form</field>
+    <field name="view_mode">list,kanban,form</field>
+    <field name="search_view_id" ref="view_instrument_search"/>
+    <field name="context">{
+      'search_default_etalonnage_depasse': 0,
+    }</field>
     <field name="help" type="html">
       <p class="o_view_nocontent_smiling_face">
-        Aucun instrument enregistre
+        Aucun instrument enregistré
       </p>
       <p>
-        Cliquez sur Nouveau pour ajouter
-        votre premier instrument.
+        Cliquez sur <b>Nouveau</b> pour ajouter votre premier instrument,
+        ou utilisez le bouton <b>Importer Excel</b> pour un import en masse.
       </p>
     </field>
+  </record>
+
+  <!-- Action filtrée : instruments à étalonner -->
+  <record id="action_instrument_a_etalonner" model="ir.actions.act_window">
+    <field name="name">À étalonner</field>
+    <field name="res_model">snim.instrument</field>
+    <field name="view_mode">list,kanban,form</field>
+    <field name="domain">[('etalonnage_status','in',['depasse','bientot']),('statut','!=','reforme')]</field>
+    <field name="context">{'search_default_etalonnage_depasse': 1}</field>
   </record>
 
 </odoo>
